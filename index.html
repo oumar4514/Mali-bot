@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mali-bot</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-icon">🤖</span>
+        <div>
+          <h1>Mali-bot</h1>
+          <p>IA chat</p>
+        </div>
+      </div>
+    </header>
+
+    <main class="chat-panel">
+      <div id="chatMessages" class="chat-messages">
+        <div class="message bot">
+          <div class="bubble">
+            <p>Salut ! 👋 Je suis Mali-bot. Pose-moi n’importe quelle question.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="composer">
+        <div class="input-wrap">
+          <input
+            id="messageInput"
+            type="text"
+            placeholder="Écris ta question..."
+            autocomplete="off"
+          />
+          <button id="sendBtn" class="send-btn">Envoyer</button>
+        </div>
+
+        <div class="actions">
+          <button id="clearBtn" class="action-btn secondary">Effacer</button>
+          <button id="copyBtn" class="action-btn secondary">Copier</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
