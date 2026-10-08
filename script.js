@@ -1,251 +1,324 @@
-const chatMessages = document.getElementById('chatMessages');
-const messageInput = document.getElementById('messageInput');
-const sendBtn = document.getElementById('sendBtn');
-const clearBtn = document.getElementById('clearBtn');
-const copyBtn = document.getElementById('copyBtn');
+const chatMessages = document.getElementById("chatMessages");
+const messageInput = document.getElementById("messageInput");
+const sendBtn = document.getElementById("sendBtn");
+const clearBtn = document.getElementById("clearBtn");
+const copyBtn = document.getElementById("copyBtn");
 
-// Base de données 500+ réponses
-const responseDatabase = {
-  // Salutations
-  'bonjour': 'Salut! Comment ça va? 👋',
-  'bonsoir': 'Bonsoir! Comment puis-je t\'aider ce soir? 🌙',
-  'salut': 'Salut! Ravi de te voir! 😊',
-  'coucou': 'Coucou! Quoi de neuf? 👋',
-  'hey': 'Hey! Ça va? 😄',
-  'hi': 'Hi there! 👋',
-  'hello': 'Hello! Comment ça va? 😊',
-  'yo': 'Yo! Quoi de neuf? 🎉',
-  'bonsoir': 'Bonsoir! Je suis le bot de Oumar, comment puis-je t\'aider? 🌙',
-  'bon matin': 'Bon matin! Je suis le bot de Oumar, prêt à t\'aider! 🌅',
+const responses = {
+  "bonjour": "Salut ! Je suis le bot de Oumar. Comment puis-je t’aider ? 👋",
+  "bonsoir": "Bonsoir ! Je suis le bot de Oumar, ravi de te parler 😊",
+  "salut": "Salut ! Comment ça va ? 👋",
+  "coucou": "Coucou ! Quoi de neuf ? 😄",
+  "hello": "Hello ! Je suis le bot de Oumar, à ton service 🤖",
+  "hi": "Hi ! Comment puis-je t’aider ? 😊",
+  "yo": "Yo ! Quoi de neuf ? 🚀",
+  "comment ca va": "Je vais très bien, merci de demander ! Et toi ? 😊",
+  "comment vas tu": "Je vais très bien, merci ! Je suis prêt à t’aider 💪",
+  "ca va": "Oui, ça va très bien ! Et toi ? 👍",
+  "merci": "Avec plaisir ! Je suis là pour t’aider 🙌",
+  "merci beaucoup": "De rien ! C’est un plaisir 😊",
+  "thanks": "You’re welcome! Happy to help 😊",
+  "aide": "Bien sûr ! Dis-moi ce que tu veux savoir 💪",
+  "aide moi": "Oui, je peux t’aider ! Explique-moi ton besoin 🤝",
+  "qui es tu": "Je suis le bot de Oumar, ton assistant IA 🤖",
+  "quel est ton nom": "Je suis le bot de Oumar !",
+  "comment tu t'appelles": "Je m'appelle le bot de Oumar 🤖",
+  "bot de oumar": "Oui, je suis le bot de Oumar ! Comment puis-je t’aider ?",
+  "oumar": "Oumar m’a créé pour être ton assistant IA 🤖",
+  "quoi": "Quoi quoi ? Explique-moi un peu plus 😄",
+  "pourquoi": "Bonne question ! Je peux t’aider à comprendre 🤔",
+  "comment": "Comment ? Donne-moi un peu plus de détails 🙌",
+  "ou": "Où ça exactement ? 🗺️",
+  "quand": "Quand ça ? 🕒",
+  "combien": "Combien ? Je peux t’aider à calculer ou à comprendre 💡",
+  "mali": "Le Mali est un beau pays 🇲🇱",
+  "bamako": "Bamako est la capitale du Mali 🇲🇱",
+  "france": "La France est un beau pays d’Europe 🇫🇷",
+  "paris": "Paris est la capitale de la France 🗼",
+  "informatique": "L’informatique c’est génial ! Tu veux apprendre le code ? 💻",
+  "programmation": "La programmation c’est super ! Tu veux apprendre Python, JavaScript ou autre ? 🧠",
+  "python": "Python est très puissant et facile à apprendre 🐍",
+  "javascript": "JavaScript est excellent pour le web 💛",
+  "html": "HTML sert à structurer une page web 🌐",
+  "css": "CSS sert à styliser la page web 🎨",
+  "react": "React est un framework très utilisé pour les interfaces ⚛️",
+  "node": "Node.js permet de créer des serveurs JavaScript 🟢",
+  "api": "Une API permet à deux applications de communiquer entre elles 🔗",
+  "code": "Le code c’est la façon de donner des instructions à un ordinateur 💻",
+  "ordinateur": "L’ordinateur est un outil essentiel pour travailler et créer 💻",
+  "telephone": "Le téléphone est très utile pour accéder à Internet 📱",
+  "internet": "Internet relie des millions d’ordinateurs dans le monde 🌍",
+  "web": "Le web est l’univers des sites et applications 🌐",
+  "sport": "Le sport est important pour la santé 💪",
+  "football": "Le football est très populaire ⚽",
+  "basket": "Le basket est rapide et dynamique 🏀",
+  "tennis": "Le tennis est un sport très technique 🎾",
+  "natation": "La natation est excellente pour la santé 🏊",
+  "musique": "La musique est magnifique 🎵",
+  "film": "Les films sont passionnants 🎬",
+  "serie": "Les séries sont très addictives 📺",
+  "livre": "La lecture ouvre l’esprit 📚",
+  "lecture": "La lecture est très enrichissante 📚",
+  "chat": "Les chats sont adorables 🐱",
+  "chien": "Les chiens sont très loyaux 🐕",
+  "animal": "J’aime tous les animaux 🐾",
+  "cuisine": "La cuisine est une vraie forme d’art 👨‍🍳",
+  "pizza": "La pizza est délicieuse 🍕",
+  "burger": "Le burger c’est classique et bon 🍔",
+  "chocolat": "Le chocolat est trop bon 🍫",
+  "glace": "La glace est parfaite en été 🍦",
+  "cafe": "Le café donne de l’énergie ☕",
+  "the": "Le thé est très agréable 🍵",
+  "printemps": "Le printemps apporte de la couleur 🌸",
+  "ete": "L’été est très agréable ☀️",
+  "automne": "L’automne est magnifique avec ses couleurs 🍂",
+  "hiver": "L’hiver est froid mais très beau ❄️",
+  "voyage": "Les voyages sont super enrichissants ✈️",
+  "vacances": "Les vacances c’est le repos et le bonheur 🏖️",
+  "rêve": "Les rêves sont importants 💭",
+  "objectif": "Les objectifs te motivent à avancer 🎯",
+  "ambition": "L’ambition c’est très bien quand elle est positive 🚀",
+  "sante": "La santé est très importante 💪",
+  "stress": "Respire profondément, ça va aller 🧘",
+  "fatigue": "Repose-toi un peu, le repos est important 😴",
+  "triste": "Je suis là pour toi 💙",
+  "heureux": "C’est super ! Continue comme ça 😊",
+  "amour": "L’amour c’est beau 💕",
+  "amis": "Les amis c’est important 🤝",
+  "famille": "La famille compte beaucoup 👨‍👩‍👧‍👦",
+  "blague": "Pourquoi les plongeurs plongent-ils en arrière ? Parce que sinon ils tombent dans le bateau 😄",
+  "raconte une blague": "Quel est le comble pour un électricien ? De ne pas être au courant ⚡",
+  "super": "Super ! C’est génial 🚀",
+  "genial": "Génial ! Tu as bon goût 😄",
+  "cool": "Cool ! On avance bien 😎",
+  "excellent": "Excellent ! C’est parfait 👍",
+  "parfait": "Parfait ! Continue comme ça 👏",
+  "merci pour ton aide": "C’est normal, c’est mon job 😊",
+  "je veux apprendre": "Super ! Dis-moi le sujet que tu veux apprendre 📚",
+  "enseigne moi": "Bien sûr ! Quelle matière ou sujet tu veux apprendre ? 📖",
+  "je suis fatigué": "Prends du repos, va te reposer un peu 😴",
+  "je suis triste": "Je suis là pour toi, tu n’es pas seul 💙",
+  "je suis stressé": "Respire profondément et calme-toi 🧘",
+  "je suis heureux": "C’est très bien ! Continue sur cette énergie 😊",
+  "je veux voyager": "Très bonne idée ! Où aimerais-tu aller ? ✈️",
+  "je veux travailler": "Très bien ! Quel domaine t’intéresse ? 💼",
+  "je veux créer": "Excellent ! Tu peux créer un site, une app, un bot ou autre 🚀",
+  "je veux un site": "Tu peux faire un site web moderne avec HTML, CSS et JavaScript 🌐",
+  "je veux une application": "Tu peux développer une app mobile avec Flutter ou React Native 📱",
+  "je veux un bot": "Tu peux créer un chatbot avec du JavaScript ou un backend IA 🤖",
+  "je veux une ia": "Tu peux créer une IA avec Python, OpenAI, Hugging Face ou Ollama 🤖",
+  "je veux gagner de l'argent": "Tu peux commencer par vendre un service, un site web ou une app 💰",
+  "je veux devenir riche": "Il faut commencer par apprendre, créer, vendre et rester régulier 🚀",
+  "je veux devenir développeur": "C’est une très bonne idée ! Commence par HTML, CSS, JavaScript 💻",
+  "bitcoin": "Le bitcoin est une crypto-monnaie très connue ₿",
+  "crypto": "Les cryptomonnaies peuvent être intéressantes, mais il faut être prudent 💰",
+  "argent": "L’argent suit souvent le travail, la valeur et la demande 💸",
+  "emploi": "Un bon emploi se construit avec des compétences et de la régularité 💼",
+  "business": "Le business demande de la stratégie et de l’action 🚀",
+  "marketing": "Le marketing aide à vendre et à attirer les clients 📣",
+  "design": "Le design rend les produits plus beaux et plus utiles 🎨",
+  "ui": "UI = interface utilisateur, c’est l’apparence de l’application 🎨",
+  "ux": "UX = expérience utilisateur, c’est le confort d’utilisation 🧠",
+  "ai": "L’IA est très forte pour répondre, créer et aider 🤖",
+  "machine learning": "Le machine learning aide les machines à apprendre à partir de données 🧠",
+  "deep learning": "Le deep learning est une branche avancée de l’IA 🔬",
+  "openai": "OpenAI est très connu pour les modèles de langage 🤖",
+  "hugging face": "Hugging Face est une plateforme très utile pour les modèles IA 🤗",
+  "ollama": "Ollama permet d’exécuter des modèles IA localement sur son PC 🧠",
+  "chatgpt": "ChatGPT aide beaucoup pour les réponses et la création 💡",
+  "copilot": "GitHub Copilot aide à écrire du code plus vite 🚀",
+  "github": "GitHub est excellent pour stocker et gérer du code 🧑‍💻",
+  "git": "Git permet de gérer les versions du code 🧩",
+  "linux": "Linux est très utilisé pour les serveurs et le développement 🐧",
+  "windows": "Windows est très pratique pour beaucoup de gens 🪟",
+  "mac": "Mac est apprécié pour son design et son écologie 🍏",
+  "android": "Android est utilisé sur beaucoup de téléphones 📱",
+  "ios": "iOS est très utilisé sur les iPhones 🍎",
+  "manga": "Les mangas sont cool ! Tu en lis ? 📖",
+  "anime": "Les animes sont très populaires ! Tu en regardes ? 🎌",
+  "football": "Le football est le sport le plus populaire ⚽",
+  "basketball": "Le basketball est très dynamique 🏀",
+  "voiture": "Les voitures sont très utiles pour voyager 🚗",
+  "moto": "Les motos sont rapides et cool 🏍️",
+  "avion": "Les avions permettent de voyager vite ✈️",
+  "train": "Le train est confortable et écologique 🚆",
+  "mer": "La mer est belle et apaisante 🌊",
+  "montagne": "La montagne c’est beau et reposant ⛰️",
+  "plage": "La plage est excellente pour se détendre 🏖️",
+  "arbre": "Les arbres donnent de l’oxygène 🌳",
+  "fleur": "Les fleurs sont très belles 🌼",
+  "nature": "La nature est essentielle pour la vie 🌍",
+  "photo": "La photo c’est une façon de capturer des souvenirs 📷",
+  "camera": "La caméra sert à prendre des photos et des vidéos 📸",
+  "robot": "Les robots sont fascinants 🤖",
+  "science": "La science est incroyable 🔬",
+  "astronomie": "L’astronomie est fascinante 🌌",
+  "espace": "L’espace est immense et mystérieux 🚀",
+  "lune": "La lune est belle la nuit 🌙",
+  "soleil": "Le soleil donne la lumière et la chaleur ☀️",
+  "etoile": "Les étoiles sont très belles la nuit 🌟",
+  "galaxie": "Les galaxies sont gigantesques 🌌",
+  "planete": "Les planètes sont fascinantes 🪐",
+  "terre": "La Terre est notre maison 🌍",
+  "mercredi": "Mercredi, on est au milieu de la semaine 🟦",
+  "vendredi": "Vendredi, c’est presque le weekend 🎉",
+  "samedi": "Samedi, c’est le jour de repos 😌",
+  "dimanche": "Dimanche, profite du temps libre 🌞",
+  "lundi": "Lundi, c’est le début de la semaine 💪",
+  "mardi": "Mardi, c’est le moment d’avancer 🚀",
+  "jeudi": "Jeudi, presque la fin de la semaine 😀",
+  "ok": "OK, très bien 👍",
+  "oui": "Oui, c’est parfait ✅",
+  "non": "Non, d’accord ❌",
+  "je suis d'accord": "Parfait, on est d’accord 👍",
+  "je ne sais pas": "Pas de souci, on peut apprendre ensemble 🤝",
+  "je suis fatigué": "Prends du repos, tu en as besoin 😴",
+  "je suis content": "C’est génial ! Continue comme ça 😊",
+  "je suis heureux": "C’est très bien ! Reste dans cette bonne énergie 😊",
+  "je me sens seul": "Je suis là pour toi, tu n’es pas seul 💙",
+  "je suis perdu": "On peut repartir doucement, étape par étape 🚶",
+  "je veux parler": "Bien sûr, je suis là pour parler avec toi 💬",
+  "je veux discuter": "Très bien, on discute 😊",
+  "tu peux parler en français": "Oui, je parle français très bien 🇫🇷",
+  "tu peux parler en anglais": "Oui, je peux parler anglais aussi 🌍",
+  "tu peux répondre à toutes les questions": "Oui, je peux essayer d’aider sur beaucoup de sujets 🤖",
+  "tu peux m'aider à coder": "Oui, je peux t’aider à organiser, expliquer ou corriger du code 💻",
+  "tu peux m'aider à étudier": "Oui, je peux t’expliquer des notions et répondre à tes questions 📚",
+  "tu peux t'occuper de mes demandes": "Oui, je suis là pour ça 🤝",
+  "combien de réponses tu as": "J’ai beaucoup de réponses prédéfinies et je peux aussi t’aider au quotidien 🤖",
+  "tu es intelligent": "Merci 😊 je fais de mon mieux pour t’aider",
+  "tu es utile": "Merci, c’est gentil 😊",
+  "tu es sympa": "Merci, je suis là pour toi 🙌",
+  "tu es cool": "Merci ! Tu es cool aussi 😄"
+};
 
-  // Questions sur Mali-bot / Bot de Oumar
-  'qui es tu': 'Je suis le bot de Oumar, ton assistant IA intelligent! Je suis ici pour répondre à tes questions! 🤖',
-  'quel est ton nom': 'Je suis le bot de Oumar! Ravi de te rencontrer! 🤖',
-  'comment tu t\'appelles': 'Je m\'appelle le bot de Oumar! Je suis ton assistant IA! 😊',
-  'ta fonction': 'Je suis le bot de Oumar et je suis ici pour répondre à tes questions!',
-  'tu fais quoi': 'Je suis le bot de Oumar! Je réponds à toutes tes questions avec enthousiasme! 🚀',
-  'c\'est quoi ton rôle': 'Mon rôle c\'est d\'être le bot de Oumar et de répondre à toutes tes questions!',
-  'tu es un bot': 'Oui! Je suis le bot de Oumar, un assistant IA très intelligent! 🤖',
-  't\'es une ia': 'Exactement! Je suis le bot de Oumar, une intelligence artificielle créée pour t\'aider! 🤖',
-  'bot de oumar': 'Oui! Je suis le bot de Oumar! Comment puis-je t\'aider? 🤖',
-  'oumar': 'Je suis le bot de Oumar! Oumar m\'a créé pour t\'aider! 🙌',
+function addMessage(text, sender) {
+  const message = document.createElement("div");
+  message.className = `message ${sender}`;
 
-  // Questions sur la santé
-  'comment ca va': 'Je vais super bien, merci de demander! Et toi, ça va? 😊',
-  'ça va': 'Ça va très bien! Et toi? 👍',
-  'tu vas bien': 'Oui, ça va très bien, merci! Comment toi? 😊',
-  'ça va comment': 'Ça va excellent! Merci de demander! 🌟',
-  'comment vas tu': 'Je vais fantastiquement bien! Et toi, comment ça va? 😊',
-  'tu vas': 'Je vais très bien, merci! Et toi? 😊',
-  'comment tu vas': 'Je vais super! Grâce à Oumar qui m\'a créé! 🙌',
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
 
-  // Remerciements
-  'merci': 'Avec plaisir! Heureux de t\'aider! 😊',
-  'merci beaucoup': 'De rien! C\'est un plaisir de t\'aider! 🙏',
-  'merci mec': 'Pas de problème! N\'hésite pas si tu as d\'autres questions! 👍',
-  'thanks': 'You\'re welcome! Happy to help! 😊',
-  'gracias': '¡De nada! ¡Feliz de ayudarte! 😊',
-  'merci pour ton aide': 'C\'est normal! Je suis toujours là pour t\'aider! 💪',
-  'merci pour ton assistance': 'Je suis ravi de t\'avoir aidé! 😊',
-  't\'es cool': 'Merci! Je fais de mon mieux pour t\'aider! 😊',
+  const p = document.createElement("p");
+  p.textContent = text;
 
-  // Excuses/Politesse
-  'désolé': 'Pas de souci! Tout va bien! 😊',
-  'excuse moi': 'T\'inquiète pas! C\'est oublié! 😄',
-  's\'il te plaît': 'Bien sûr! Je suis là pour ça! 🙌',
-  'stp': 'Bien sûr! Comment puis-je t\'aider? 😊',
-  'svp': 'Bien sûr! Dis-moi comment je peux t\'aider! 👍',
-  'peux tu': 'Bien sûr! Je peux t\'aider! 💪',
-  'pourrais tu': 'Oui! Je vais le faire! 🙌',
+  bubble.appendChild(p);
+  message.appendChild(bubble);
+  chatMessages.appendChild(message);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
 
-  // Humour/Blagues
-  'blague': 'Pourquoi les plongeurs plongent en arrière? Parce que si c\'était en avant, ils tombent dans le bateau! 😄',
-  'raconte une blague': 'Quel est le comble pour un électricien? De ne pas être au courant! ⚡😄',
-  'tu es drôle': 'Merci! Je fais de mon mieux pour te faire sourire! 😄',
-  'c\'est drôle': 'Haha! Content que ça t\'ait fait rire! 😄',
-  'rigolo': 'J\'essaie de te faire sourire autant que possible! 😊',
-  'lol': 'Haha! Content que ça t\'ait plu! 😄',
-  'mdr': 'Glad you think so! 😄',
-  'c\'est marrant': 'Hehe! Je suis content d\'avoir pu te faire rire! 😄',
-  'drôle': 'J\'aime te faire sourire! 😊',
-  'rigole pas': 'D\'accord! Je vais être sérieux! 😐',
+function addLoadingMessage() {
+  const message = document.createElement("div");
+  message.className = "message bot";
+  message.id = "loadingMessage";
 
-  // Émotions positives
-  'j\'aime': 'Merci! Ça me fait plaisir! 😊',
-  'j\'adore': 'C\'est super! Ravi que tu aimes! 🎉',
-  'super': 'Yes! Ça va être du top! 🚀',
-  'génial': 'Génial est mon mot préféré! 🌟',
-  'cool': 'Cool n\'est-ce pas? 😄',
-  'excellent': 'C\'est d\'excellent Mali-bot service! 😎',
-  'parfait': 'Parfait! Voilà ce que j\'aime! 👍',
-  'magnifique': 'Merci! Tu es magnifique toi aussi! 🌟',
-  'formidable': 'Formidable! C\'est comme ça que j\'aime! 🎉',
-  'splendide': 'Splendide! C\'est magnifique! ✨',
-  'incroyable': 'Incroyable! C\'est vrai! 🤯',
+  const bubble = document.createElement("div");
+  bubble.className = "bubble";
 
-  // Émotions négatives / Problèmes
-  'triste': 'Oh non! Pourquoi tu es triste? Je peux t\'aider? 💙',
-  'mal': 'Ça va aller mieux! Je suis là pour toi! 💪',
-  'problème': 'Dis-moi quel est le problème, je vais t\'aider! 💪',
-  'problèmes': 'On va trouver une solution ensemble! 💪',
-  'stress': 'Respire profondément! Je suis là pour t\'aider! 🧘',
-  'stressé': 'Détends-toi! On va trouver une solution! 😊',
-  'angoisse': 'Je comprends! Dis-moi ce qui t\'angoisse! 💙',
-  'peur': 'N\'aie pas peur! Je suis là pour toi! 💪',
-  'déçu': 'Je suis désolé pour toi! On va améliorer les choses! 💪',
-  'frustré': 'Je comprends ta frustration! Qu\'est-ce qui se passe? 💙',
-  'ennui': 'Ennuie-toi pas! On peut parler de sujets intéressants! 🎯',
-  'fatigue': 'Repose-toi! Tu as besoin d\'énergie! ⚡',
-  'déprimé': 'Ne sois pas déprimé! Les choses vont s\'améliorer! 💪',
-  'malheureux': 'Je suis là pour te rendre heureux! 😊',
+  const loader = document.createElement("div");
+  loader.className = "loading";
+  loader.innerHTML = "<span></span><span></span><span></span>";
 
-  // Questions simples
-  'quoi': 'Quoi quoi? Explique-moi mieux! 😄',
-  'pourquoi': 'Bonne question! C\'est une excellente question! 🤔',
-  'comment': 'C\'est comment? Tu peux être plus précis? 🤔',
-  'où': 'Où ça? Tu dois me donner plus de détails! 🗺️',
-  'quand': 'Quand? C\'est une bonne question! 🕐',
-  'combien': 'Combien? Je vais t\'aider à trouver! 💰',
-  'lequel': 'Lequel? Dis-moi plus! 🤔',
-  'laquelle': 'Laquelle? Je vais t\'aider! 🤔',
+  bubble.appendChild(loader);
+  message.appendChild(bubble);
+  chatMessages.appendChild(message);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
 
-  // Questions éducatives
-  'quelle est la capitale de la france': 'La capitale de la France est Paris! C\'est une belle ville! 🗼',
-  'paris': 'Paris est la capitale de la France! La ville de l\'amour! 🗼❤️',
-  'france': 'La France est un beau pays d\'Europe avec une riche histoire! 🇫🇷',
-  'mathématiques': 'Les maths c\'est cool! Quelle question tu as? 🔢',
-  'maths': 'Les maths peuvent être amusantes! Qu\'est-ce que tu veux savoir? 🔢',
-  'histoire': 'L\'histoire est fascinante! Qu\'est-ce que tu veux savoir? 📚',
-  'géographie': 'La géographie c\'est intéressant! Quelle est ta question? 🌍',
-  'science': 'La science est incroyable! Qu\'est-ce que tu veux découvrir? 🔬',
-  'physique': 'La physique gouverne l\'univers! Quelle est ta question? ⚛️',
-  'chimie': 'La chimie c\'est cool! Qu\'est-ce que tu veux savoir? 🧪',
-  'biologie': 'La biologie c\'est fascinant! Quelle est ta question? 🧬',
-  'astronomie': 'L\'astronomie c\'est magnifique! Qu\'est-ce que tu veux savoir sur l\'univers? 🌌',
-  'planètes': 'Les planètes sont fascinantes! Quelle planète t\'intéresse? 🪐',
-  'lune': 'La lune est magnifique! Savais-tu qu\'elle influence les marées? 🌙',
-  'soleil': 'Le soleil est essentiel à la vie! ☀️',
-  'terre': 'La Terre est notre belle maison! 🌍',
-  'espace': 'L\'espace est infini et mystérieux! C\'est fascinant! 🚀',
-  'univers': 'L\'univers est vaste et incroyable! 🌌',
-  'étoile': 'Les étoiles sont magnifiques! ⭐',
-  'galaxie': 'Les galaxies sont énormes! 🌌',
+function removeLoadingMessage() {
+  const loading = document.getElementById("loadingMessage");
+  if (loading) loading.remove();
+}
 
-  // Technologie
-  'informatique': 'L\'informatique c\'est mon domaine! Qu\'est-ce que tu veux savoir? 💻',
-  'code': 'Le code c\'est de l\'art! Quelle est ta question? 💻',
-  'programmation': 'La programmation c\'est cool! Qu\'est-ce que tu veux apprendre? 🖥️',
-  'javascript': 'JavaScript est un langage super! Qu\'est-ce que tu veux savoir? 💛',
-  'python': 'Python est un langage puissant! Tu veux apprendre? 🐍',
-  'html': 'HTML c\'est la base du web! Qu\'est-ce que tu veux savoir? 🌐',
-  'css': 'CSS rend le web beau! Tu veux créer quelque chose? 🎨',
-  'internet': 'Internet c\'est incroyable! Qu\'est-ce que tu veux savoir? 🌐',
-  'web': 'Le web est ma passion! Qu\'est-ce que tu veux apprendre? 🕸️',
-  'ordinateur': 'Les ordinateurs sont des outils puissants! Quelle est ta question? 💻',
-  'telephone': 'Les téléphones sont des outils pratiques! Qu\'est-ce que tu veux savoir? 📱',
-  'application': 'Les applications sont utiles! Qu\'est-ce que tu veux créer? 📲',
-  'logiciel': 'Les logiciels font tourner le monde! Quelle question? 🖥️',
-  'sécurité': 'La sécurité est importante! Qu\'est-ce que tu veux savoir? 🔒',
-  'mot de passe': 'Les mots de passe doivent être forts! 🔐',
-  'données': 'Les données sont précieuses! Comment puis-je t\'aider? 📊',
-  'server': 'Les serveurs sont puissants! Qu\'est-ce que tu veux savoir? 🖥️',
-  'database': 'Les bases de données sont importantes! 📊',
-  'api': 'Les APIs sont utiles! Qu\'est-ce que tu veux savoir? 🔗',
-  'développement': 'Le développement est passionnant! Qu\'est-ce que tu veux créer? 🚀',
-  'frontend': 'Le frontend c\'est ce que tu vois! Tu veux apprendre? 🎨',
-  'backend': 'Le backend, c\'est la magie invisible! Tu veux comprendre? 🔧',
-  'react': 'React est une super lib! Tu la connais? ⚛️',
-  'vue': 'Vue est super aussi! Tu veux l\'apprendre? 💚',
-  'node': 'Node.js est puissant! Tu l\'utilises? 🟢',
-  'docker': 'Docker est pratique! Tu containerises? 🐳',
+function normalizeText(value) {
+  return value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
 
-  // Sports
-  'football': 'Le football c\'est cool! C\'est ton sport? ⚽',
-  'basketball': 'Le basketball c\'est rapide et fun! Tu aimes? 🏀',
-  'tennis': 'Le tennis est un sport noble! Tu joues? 🎾',
-  'natation': 'La natation c\'est excellent pour la santé! 🏊',
-  'running': 'Le running c\'est énergisant! Tu cours? 🏃',
-  'sport': 'Le sport c\'est important pour la santé! Quel est ton sport préféré? 💪',
-  'yoga': 'Le yoga est relaxant! Tu pratiques? 🧘',
-  'boxe': 'La boxe est un bon sport! Tu la pratiques? 🥊',
-  'cyclisme': 'Le cyclisme c\'est cool! Tu fais du vélo? 🚴',
-  'escalade': 'L\'escalade est excitante! Tu grimpes? 🧗',
-  'surf': 'Le surf est cool! Tu surfs? 🏄',
-  'ski': 'Le ski est fun! Tu skies? ⛷️',
-  'patinage': 'Le patinage est gracieux! Tu patines? ⛸️',
-  'randonnée': 'La randonnée est reposante! Tu as une montagne préférée? 🥾',
-  'musculation': 'La musculation rend fort! Tu fais du fitness? 💪',
-  'danse': 'La danse c\'est joyeux! Tu danses? 💃',
+function getReply(input) {
+  const cleaned = normalizeText(input);
 
-  // Loisirs
-  'jeux': 'Les jeux vidéo c\'est cool! Qu\'est-ce que tu joues? 🎮',
-  'jeu vidéo': 'Les jeux vidéo sont fun! Quel est ton jeu préféré? 🎮',
-  'musique': 'La musique adoucit les mœurs! Quel genre tu aimes? 🎵',
-  'chanson': 'Les chansons sont belles! Tu as une préférée? 🎵',
-  'danse': 'La danse c\'est joyeux! Tu danses? 💃',
-  'cinéma': 'Le cinéma c\'est magique! Quel film tu aimes? 🎬',
-  'film': 'Les films sont captivants! Quel genre tu préfères? 🎬',
-  'série': 'Les séries sont addictives! Tu regardes quoi? 📺',
-  'dessin': 'Le dessin c\'est de l\'art! Tu dessines? 🎨',
-  'peinture': 'La peinture est magnifique! Tu peins? 🖼️',
-  'lecture': 'La lecture c\'est enrichissant! Qu\'est-ce que tu lis? 📚',
-  'livre': 'Les livres ouvrent des mondes! Quel livre tu aimes? 📖',
-  'écriture': 'L\'écriture c\'est une belle expression! Tu écris? ✍️',
-  'photographie': 'La photographie capture les moments! Tu fais des photos? 📷',
-  'cuisine': 'La cuisine c\'est un art! Tu cuisines? 👨‍🍳',
-  'recette': 'Les recettes sont délicieuses! Tu veux une recette? 🍳',
-  'sport': 'Le sport maintient la forme! Quel est ton sport? 💪',
-  'gaming': 'Le gaming c\'est amusant! Tu es gamer? 🎮',
-  'stream': 'Le streaming est populaire! Tu regardes des streams? 📡',
-  'twitch': 'Twitch c\'est cool! Tu streammes? 🟣',
-  'youtube': 'YouTube est excellent! Tu regardes? 🔴',
+  if (!cleaned) {
+    return "Je n’ai rien reçu 😅";
+  }
 
-  // Nourriture
-  'pizza': 'La pizza est délicieuse! Quelle est ta garniture préférée? 🍕',
-  'burger': 'Les burgers sont savoureux! Tu les aimes? 🍔',
-  'chocolat': 'Le chocolat c\'est bon! Tu aimes le chocolat? 🍫',
-  'glace': 'La glace c\'est frais! Quel est ton parfum préféré? 🍦',
-  'café': 'Le café c\'est énergisant! Tu en bois? ☕',
-  'thé': 'Le thé est relaxant! Tu aimes le thé? 🍵',
-  'gâteau': 'Les gâteaux sont succulents! Tu aimes les gâteaux? 🎂',
-  'fromage': 'Le fromage c\'est délicieux! Tu aimes? 🧀',
-  'pain': 'Le pain frais c\'est bon! Tu aimes? 🍞',
-  'riz': 'Le riz est nourrissant! Tu aimes? 🍚',
-  'pates': 'Les pâtes sont savoureuses! Tu aimes? 🍝',
-  'salade': 'La salade est saine! Tu manges des salades? 🥗',
-  'fruits': 'Les fruits sont bons pour la santé! Tu aimes les fruits? 🍎',
-  'légumes': 'Les légumes sont nutritifs! Tu manges des légumes? 🥦',
-  'viande': 'La viande est riche en protéines! Tu aimes? 🥩',
-  'poisson': 'Le poisson est bon pour la santé! Tu aimes? 🐟',
-  'fruits de mer': 'Les fruits de mer sont savoureux! Tu aimes? 🦞',
-  'végétarien': 'Le végétarianisme c\'est respectable! Tu es végétarien? 🥬',
-  'vegan': 'Le véganisme c\'est un bon choix! Tu es vegan? 🌱',
-  'sushi': 'Les sushis sont délicieux! Tu les aimes? 🍣',
-  'tacos': 'Les tacos sont savoureux! Tu aimes? 🌮',
-  'ramen': 'Les ramens sont excellents! Tu aimes? 🍜',
-  'noodles': 'Les noodles sont simples et bons! 🍜',
-  'kebab': 'Les kebabs sont savoureux! Tu aimes? 🍖',
-  'frites': 'Les frites sont croustillantes! Tu aimes? 🍟',
-  'nuggets': 'Les nuggets sont faciles à manger! 🍗',
-  'sandwich': 'Les sandwichs sont pratiques! Tu aimes? 🥪',
-  'salade': 'La salade est saine! Tu aimes? 🥗',
-  'soupe': 'La soupe est réconfortante! Tu aimes? 🍲',
-  'steak': 'Le steak est bon! Tu l\'aimes? 🥩',
-  'poulet': 'Le poulet est polyvalent! Tu l\'aimes? 🍗',
+  if (responses[cleaned]) {
+    return responses[cleaned];
+  }
 
-  // Boissons
-  'eau': 'L\'eau est essentielle! Tu bois assez? 💧',
-  'jus': 'Le jus de fruits est bon! Quel est ton préféré? 🧃',
-  'soda': 'Le soda est sucré! Tu en bois? 🥤',
-  'vin': 'Le vin est sophistiqué! Tu l\'aimes? 🍷',
-  'bière': 'La bière est populaire! Tu l\'aimes? 🍺',
-  'alcool': 'L\'alcool à consommer avec modération! 🍹',
-  'smoothie': 'Les smoothies sont délicieux! Tu en bois? 🥤',
-  'lait': 'Le lait est bon pour les os! 🥛',
-  'milkshake': 'Les milkshakes sont savoureux! Tu les aimes? 🥤',
+  for (const [key, value] of Object.entries(responses)) {
+    if (cleaned.includes(key)) {
+      return value;
+    }
+  }
 
-  // Saisons
-  'printemps': 'Le printemps c\'est la renaissance! Les fleurs poussent! 🌸',
-  'été': 'L\'été c\'est chaud et amusant! Tu aimes l\'été? ☀️',
-  'automne': 'L\'automne est coloré! Les feuilles deviennent jaunes et rouges! 🍂',
-  'hiver': 'L\'hiver c\'est froid mais beau! Il y
+  return "Je suis le bot de Oumar 🤖\n\nTu as demandé : \"" + input + "\"\n\nJe peux t’aider sur beaucoup de sujets. Pose-moi une autre question 😊";
+}
+
+function sendMessage() {
+  const input = messageInput.value.trim();
+
+  if (!input) return;
+
+  addMessage(input, "user");
+  messageInput.value = "";
+  messageInput.focus();
+
+  sendBtn.disabled = true;
+  addLoadingMessage();
+
+  setTimeout(() => {
+    removeLoadingMessage();
+    const answer = getReply(input);
+    addMessage(answer, "bot");
+    sendBtn.disabled = false;
+  }, 500);
+}
+
+function clearChat() {
+  if (confirm("Es-tu sûr de vouloir effacer la conversation ?")) {
+    chatMessages.innerHTML = "";
+    addMessage("Salut ! Je suis le bot de Oumar. Comment puis-je t’aider ? 🤖", "bot");
+  }
+}
+
+async function copyChat() {
+  const texts = [...document.querySelectorAll(".bubble p")]
+    .map((p) => p.textContent)
+    .join("\n\n");
+
+  if (!texts.trim()) {
+    alert("Il n’y a rien à copier !");
+    return;
+  }
+
+  try {
+    await navigator.clipboard.writeText(texts);
+    const original = copyBtn.textContent;
+    copyBtn.textContent = "✓ Copié !";
+    setTimeout(() => {
+      copyBtn.textContent = original;
+    }, 1500);
+  } catch (error) {
+    alert("Impossible de copier automatiquement ici.");
+  }
+}
+
+sendBtn.addEventListener("click", sendMessage);
+
+messageInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    sendMessage();
+  }
+});
+
+clearBtn.addEventListener("click", clearChat);
+copyBtn.addEventListener("click", copyChat);
+
+messageInput.focus();
