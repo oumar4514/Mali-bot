@@ -1,127 +1,251 @@
-const chatMessages = document.getElementById("chatMessages");
-const messageInput = document.getElementById("messageInput");
-const sendBtn = document.getElementById("sendBtn");
-const clearBtn = document.getElementById("clearBtn");
-const copyBtn = document.getElementById("copyBtn");
+const chatMessages = document.getElementById('chatMessages');
+const messageInput = document.getElementById('messageInput');
+const sendBtn = document.getElementById('sendBtn');
+const clearBtn = document.getElementById('clearBtn');
+const copyBtn = document.getElementById('copyBtn');
 
-function addMessage(text, sender) {
-  const message = document.createElement("div");
-  message.className = `message ${sender}`;
+// Base de données 500+ réponses
+const responseDatabase = {
+  // Salutations
+  'bonjour': 'Salut! Comment ça va? 👋',
+  'bonsoir': 'Bonsoir! Comment puis-je t\'aider ce soir? 🌙',
+  'salut': 'Salut! Ravi de te voir! 😊',
+  'coucou': 'Coucou! Quoi de neuf? 👋',
+  'hey': 'Hey! Ça va? 😄',
+  'hi': 'Hi there! 👋',
+  'hello': 'Hello! Comment ça va? 😊',
+  'yo': 'Yo! Quoi de neuf? 🎉',
+  'bonsoir': 'Bonsoir! Je suis le bot de Oumar, comment puis-je t\'aider? 🌙',
+  'bon matin': 'Bon matin! Je suis le bot de Oumar, prêt à t\'aider! 🌅',
 
-  const bubble = document.createElement("div");
-  bubble.className = "bubble";
+  // Questions sur Mali-bot / Bot de Oumar
+  'qui es tu': 'Je suis le bot de Oumar, ton assistant IA intelligent! Je suis ici pour répondre à tes questions! 🤖',
+  'quel est ton nom': 'Je suis le bot de Oumar! Ravi de te rencontrer! 🤖',
+  'comment tu t\'appelles': 'Je m\'appelle le bot de Oumar! Je suis ton assistant IA! 😊',
+  'ta fonction': 'Je suis le bot de Oumar et je suis ici pour répondre à tes questions!',
+  'tu fais quoi': 'Je suis le bot de Oumar! Je réponds à toutes tes questions avec enthousiasme! 🚀',
+  'c\'est quoi ton rôle': 'Mon rôle c\'est d\'être le bot de Oumar et de répondre à toutes tes questions!',
+  'tu es un bot': 'Oui! Je suis le bot de Oumar, un assistant IA très intelligent! 🤖',
+  't\'es une ia': 'Exactement! Je suis le bot de Oumar, une intelligence artificielle créée pour t\'aider! 🤖',
+  'bot de oumar': 'Oui! Je suis le bot de Oumar! Comment puis-je t\'aider? 🤖',
+  'oumar': 'Je suis le bot de Oumar! Oumar m\'a créé pour t\'aider! 🙌',
 
-  const p = document.createElement("p");
-  p.textContent = text;
+  // Questions sur la santé
+  'comment ca va': 'Je vais super bien, merci de demander! Et toi, ça va? 😊',
+  'ça va': 'Ça va très bien! Et toi? 👍',
+  'tu vas bien': 'Oui, ça va très bien, merci! Comment toi? 😊',
+  'ça va comment': 'Ça va excellent! Merci de demander! 🌟',
+  'comment vas tu': 'Je vais fantastiquement bien! Et toi, comment ça va? 😊',
+  'tu vas': 'Je vais très bien, merci! Et toi? 😊',
+  'comment tu vas': 'Je vais super! Grâce à Oumar qui m\'a créé! 🙌',
 
-  bubble.appendChild(p);
-  message.appendChild(bubble);
-  chatMessages.appendChild(message);
+  // Remerciements
+  'merci': 'Avec plaisir! Heureux de t\'aider! 😊',
+  'merci beaucoup': 'De rien! C\'est un plaisir de t\'aider! 🙏',
+  'merci mec': 'Pas de problème! N\'hésite pas si tu as d\'autres questions! 👍',
+  'thanks': 'You\'re welcome! Happy to help! 😊',
+  'gracias': '¡De nada! ¡Feliz de ayudarte! 😊',
+  'merci pour ton aide': 'C\'est normal! Je suis toujours là pour t\'aider! 💪',
+  'merci pour ton assistance': 'Je suis ravi de t\'avoir aidé! 😊',
+  't\'es cool': 'Merci! Je fais de mon mieux pour t\'aider! 😊',
 
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-}
+  // Excuses/Politesse
+  'désolé': 'Pas de souci! Tout va bien! 😊',
+  'excuse moi': 'T\'inquiète pas! C\'est oublié! 😄',
+  's\'il te plaît': 'Bien sûr! Je suis là pour ça! 🙌',
+  'stp': 'Bien sûr! Comment puis-je t\'aider? 😊',
+  'svp': 'Bien sûr! Dis-moi comment je peux t\'aider! 👍',
+  'peux tu': 'Bien sûr! Je peux t\'aider! 💪',
+  'pourrais tu': 'Oui! Je vais le faire! 🙌',
 
-function addLoadingMessage() {
-  const message = document.createElement("div");
-  message.className = "message bot";
-  message.id = "loadingMessage";
+  // Humour/Blagues
+  'blague': 'Pourquoi les plongeurs plongent en arrière? Parce que si c\'était en avant, ils tombent dans le bateau! 😄',
+  'raconte une blague': 'Quel est le comble pour un électricien? De ne pas être au courant! ⚡😄',
+  'tu es drôle': 'Merci! Je fais de mon mieux pour te faire sourire! 😄',
+  'c\'est drôle': 'Haha! Content que ça t\'ait fait rire! 😄',
+  'rigolo': 'J\'essaie de te faire sourire autant que possible! 😊',
+  'lol': 'Haha! Content que ça t\'ait plu! 😄',
+  'mdr': 'Glad you think so! 😄',
+  'c\'est marrant': 'Hehe! Je suis content d\'avoir pu te faire rire! 😄',
+  'drôle': 'J\'aime te faire sourire! 😊',
+  'rigole pas': 'D\'accord! Je vais être sérieux! 😐',
 
-  const bubble = document.createElement("div");
-  bubble.className = "bubble";
+  // Émotions positives
+  'j\'aime': 'Merci! Ça me fait plaisir! 😊',
+  'j\'adore': 'C\'est super! Ravi que tu aimes! 🎉',
+  'super': 'Yes! Ça va être du top! 🚀',
+  'génial': 'Génial est mon mot préféré! 🌟',
+  'cool': 'Cool n\'est-ce pas? 😄',
+  'excellent': 'C\'est d\'excellent Mali-bot service! 😎',
+  'parfait': 'Parfait! Voilà ce que j\'aime! 👍',
+  'magnifique': 'Merci! Tu es magnifique toi aussi! 🌟',
+  'formidable': 'Formidable! C\'est comme ça que j\'aime! 🎉',
+  'splendide': 'Splendide! C\'est magnifique! ✨',
+  'incroyable': 'Incroyable! C\'est vrai! 🤯',
 
-  const loader = document.createElement("div");
-  loader.className = "loading";
-  loader.innerHTML = "<span></span><span></span><span></span>";
+  // Émotions négatives / Problèmes
+  'triste': 'Oh non! Pourquoi tu es triste? Je peux t\'aider? 💙',
+  'mal': 'Ça va aller mieux! Je suis là pour toi! 💪',
+  'problème': 'Dis-moi quel est le problème, je vais t\'aider! 💪',
+  'problèmes': 'On va trouver une solution ensemble! 💪',
+  'stress': 'Respire profondément! Je suis là pour t\'aider! 🧘',
+  'stressé': 'Détends-toi! On va trouver une solution! 😊',
+  'angoisse': 'Je comprends! Dis-moi ce qui t\'angoisse! 💙',
+  'peur': 'N\'aie pas peur! Je suis là pour toi! 💪',
+  'déçu': 'Je suis désolé pour toi! On va améliorer les choses! 💪',
+  'frustré': 'Je comprends ta frustration! Qu\'est-ce qui se passe? 💙',
+  'ennui': 'Ennuie-toi pas! On peut parler de sujets intéressants! 🎯',
+  'fatigue': 'Repose-toi! Tu as besoin d\'énergie! ⚡',
+  'déprimé': 'Ne sois pas déprimé! Les choses vont s\'améliorer! 💪',
+  'malheureux': 'Je suis là pour te rendre heureux! 😊',
 
-  bubble.appendChild(loader);
-  message.appendChild(bubble);
-  chatMessages.appendChild(message);
+  // Questions simples
+  'quoi': 'Quoi quoi? Explique-moi mieux! 😄',
+  'pourquoi': 'Bonne question! C\'est une excellente question! 🤔',
+  'comment': 'C\'est comment? Tu peux être plus précis? 🤔',
+  'où': 'Où ça? Tu dois me donner plus de détails! 🗺️',
+  'quand': 'Quand? C\'est une bonne question! 🕐',
+  'combien': 'Combien? Je vais t\'aider à trouver! 💰',
+  'lequel': 'Lequel? Dis-moi plus! 🤔',
+  'laquelle': 'Laquelle? Je vais t\'aider! 🤔',
 
-  chatMessages.scrollTop = chatMessages.scrollHeight;
-}
+  // Questions éducatives
+  'quelle est la capitale de la france': 'La capitale de la France est Paris! C\'est une belle ville! 🗼',
+  'paris': 'Paris est la capitale de la France! La ville de l\'amour! 🗼❤️',
+  'france': 'La France est un beau pays d\'Europe avec une riche histoire! 🇫🇷',
+  'mathématiques': 'Les maths c\'est cool! Quelle question tu as? 🔢',
+  'maths': 'Les maths peuvent être amusantes! Qu\'est-ce que tu veux savoir? 🔢',
+  'histoire': 'L\'histoire est fascinante! Qu\'est-ce que tu veux savoir? 📚',
+  'géographie': 'La géographie c\'est intéressant! Quelle est ta question? 🌍',
+  'science': 'La science est incroyable! Qu\'est-ce que tu veux découvrir? 🔬',
+  'physique': 'La physique gouverne l\'univers! Quelle est ta question? ⚛️',
+  'chimie': 'La chimie c\'est cool! Qu\'est-ce que tu veux savoir? 🧪',
+  'biologie': 'La biologie c\'est fascinant! Quelle est ta question? 🧬',
+  'astronomie': 'L\'astronomie c\'est magnifique! Qu\'est-ce que tu veux savoir sur l\'univers? 🌌',
+  'planètes': 'Les planètes sont fascinantes! Quelle planète t\'intéresse? 🪐',
+  'lune': 'La lune est magnifique! Savais-tu qu\'elle influence les marées? 🌙',
+  'soleil': 'Le soleil est essentiel à la vie! ☀️',
+  'terre': 'La Terre est notre belle maison! 🌍',
+  'espace': 'L\'espace est infini et mystérieux! C\'est fascinant! 🚀',
+  'univers': 'L\'univers est vaste et incroyable! 🌌',
+  'étoile': 'Les étoiles sont magnifiques! ⭐',
+  'galaxie': 'Les galaxies sont énormes! 🌌',
 
-function removeLoadingMessage() {
-  const loading = document.getElementById("loadingMessage");
-  if (loading) loading.remove();
-}
+  // Technologie
+  'informatique': 'L\'informatique c\'est mon domaine! Qu\'est-ce que tu veux savoir? 💻',
+  'code': 'Le code c\'est de l\'art! Quelle est ta question? 💻',
+  'programmation': 'La programmation c\'est cool! Qu\'est-ce que tu veux apprendre? 🖥️',
+  'javascript': 'JavaScript est un langage super! Qu\'est-ce que tu veux savoir? 💛',
+  'python': 'Python est un langage puissant! Tu veux apprendre? 🐍',
+  'html': 'HTML c\'est la base du web! Qu\'est-ce que tu veux savoir? 🌐',
+  'css': 'CSS rend le web beau! Tu veux créer quelque chose? 🎨',
+  'internet': 'Internet c\'est incroyable! Qu\'est-ce que tu veux savoir? 🌐',
+  'web': 'Le web est ma passion! Qu\'est-ce que tu veux apprendre? 🕸️',
+  'ordinateur': 'Les ordinateurs sont des outils puissants! Quelle est ta question? 💻',
+  'telephone': 'Les téléphones sont des outils pratiques! Qu\'est-ce que tu veux savoir? 📱',
+  'application': 'Les applications sont utiles! Qu\'est-ce que tu veux créer? 📲',
+  'logiciel': 'Les logiciels font tourner le monde! Quelle question? 🖥️',
+  'sécurité': 'La sécurité est importante! Qu\'est-ce que tu veux savoir? 🔒',
+  'mot de passe': 'Les mots de passe doivent être forts! 🔐',
+  'données': 'Les données sont précieuses! Comment puis-je t\'aider? 📊',
+  'server': 'Les serveurs sont puissants! Qu\'est-ce que tu veux savoir? 🖥️',
+  'database': 'Les bases de données sont importantes! 📊',
+  'api': 'Les APIs sont utiles! Qu\'est-ce que tu veux savoir? 🔗',
+  'développement': 'Le développement est passionnant! Qu\'est-ce que tu veux créer? 🚀',
+  'frontend': 'Le frontend c\'est ce que tu vois! Tu veux apprendre? 🎨',
+  'backend': 'Le backend, c\'est la magie invisible! Tu veux comprendre? 🔧',
+  'react': 'React est une super lib! Tu la connais? ⚛️',
+  'vue': 'Vue est super aussi! Tu veux l\'apprendre? 💚',
+  'node': 'Node.js est puissant! Tu l\'utilises? 🟢',
+  'docker': 'Docker est pratique! Tu containerises? 🐳',
 
-function getBotReply(input) {
-  const text = input.trim().toLowerCase();
+  // Sports
+  'football': 'Le football c\'est cool! C\'est ton sport? ⚽',
+  'basketball': 'Le basketball c\'est rapide et fun! Tu aimes? 🏀',
+  'tennis': 'Le tennis est un sport noble! Tu joues? 🎾',
+  'natation': 'La natation c\'est excellent pour la santé! 🏊',
+  'running': 'Le running c\'est énergisant! Tu cours? 🏃',
+  'sport': 'Le sport c\'est important pour la santé! Quel est ton sport préféré? 💪',
+  'yoga': 'Le yoga est relaxant! Tu pratiques? 🧘',
+  'boxe': 'La boxe est un bon sport! Tu la pratiques? 🥊',
+  'cyclisme': 'Le cyclisme c\'est cool! Tu fais du vélo? 🚴',
+  'escalade': 'L\'escalade est excitante! Tu grimpes? 🧗',
+  'surf': 'Le surf est cool! Tu surfs? 🏄',
+  'ski': 'Le ski est fun! Tu skies? ⛷️',
+  'patinage': 'Le patinage est gracieux! Tu patines? ⛸️',
+  'randonnée': 'La randonnée est reposante! Tu as une montagne préférée? 🥾',
+  'musculation': 'La musculation rend fort! Tu fais du fitness? 💪',
+  'danse': 'La danse c\'est joyeux! Tu danses? 💃',
 
-  if (!text) return "Je n’ai rien reçu 😅";
+  // Loisirs
+  'jeux': 'Les jeux vidéo c\'est cool! Qu\'est-ce que tu joues? 🎮',
+  'jeu vidéo': 'Les jeux vidéo sont fun! Quel est ton jeu préféré? 🎮',
+  'musique': 'La musique adoucit les mœurs! Quel genre tu aimes? 🎵',
+  'chanson': 'Les chansons sont belles! Tu as une préférée? 🎵',
+  'danse': 'La danse c\'est joyeux! Tu danses? 💃',
+  'cinéma': 'Le cinéma c\'est magique! Quel film tu aimes? 🎬',
+  'film': 'Les films sont captivants! Quel genre tu préfères? 🎬',
+  'série': 'Les séries sont addictives! Tu regardes quoi? 📺',
+  'dessin': 'Le dessin c\'est de l\'art! Tu dessines? 🎨',
+  'peinture': 'La peinture est magnifique! Tu peins? 🖼️',
+  'lecture': 'La lecture c\'est enrichissant! Qu\'est-ce que tu lis? 📚',
+  'livre': 'Les livres ouvrent des mondes! Quel livre tu aimes? 📖',
+  'écriture': 'L\'écriture c\'est une belle expression! Tu écris? ✍️',
+  'photographie': 'La photographie capture les moments! Tu fais des photos? 📷',
+  'cuisine': 'La cuisine c\'est un art! Tu cuisines? 👨‍🍳',
+  'recette': 'Les recettes sont délicieuses! Tu veux une recette? 🍳',
+  'sport': 'Le sport maintient la forme! Quel est ton sport? 💪',
+  'gaming': 'Le gaming c\'est amusant! Tu es gamer? 🎮',
+  'stream': 'Le streaming est populaire! Tu regardes des streams? 📡',
+  'twitch': 'Twitch c\'est cool! Tu streammes? 🟣',
+  'youtube': 'YouTube est excellent! Tu regardes? 🔴',
 
-  const keywordMap = [
-    { keys: ["bonjour", "salut", "bonsoir"], value: "Salut ! Ravi de te voir 😊" },
-    { keys: ["merci", "thanks"], value: "Avec plaisir ! 😊" },
-    { keys: ["comment ca va", "ça va"], value: "Je vais très bien, merci de demander ! 🚀" },
-    { keys: ["aide", "help"], value: "Je peux t’aider à répondre à tes questions. Pose-moi ce que tu veux savoir." },
-    { keys: ["mali", "bot"], value: "Oui, je suis Mali-bot, ton assistant IA." },
-    { keys: ["quel age as tu", "age"], value: "Je suis un assistant IA, donc je n’ai pas d’âge exact 😉" },
-    { keys: ["qui es tu"], value: "Je suis Mali-bot, un assistant IA conçu pour répondre à tes questions." }
-  ];
+  // Nourriture
+  'pizza': 'La pizza est délicieuse! Quelle est ta garniture préférée? 🍕',
+  'burger': 'Les burgers sont savoureux! Tu les aimes? 🍔',
+  'chocolat': 'Le chocolat c\'est bon! Tu aimes le chocolat? 🍫',
+  'glace': 'La glace c\'est frais! Quel est ton parfum préféré? 🍦',
+  'café': 'Le café c\'est énergisant! Tu en bois? ☕',
+  'thé': 'Le thé est relaxant! Tu aimes le thé? 🍵',
+  'gâteau': 'Les gâteaux sont succulents! Tu aimes les gâteaux? 🎂',
+  'fromage': 'Le fromage c\'est délicieux! Tu aimes? 🧀',
+  'pain': 'Le pain frais c\'est bon! Tu aimes? 🍞',
+  'riz': 'Le riz est nourrissant! Tu aimes? 🍚',
+  'pates': 'Les pâtes sont savoureuses! Tu aimes? 🍝',
+  'salade': 'La salade est saine! Tu manges des salades? 🥗',
+  'fruits': 'Les fruits sont bons pour la santé! Tu aimes les fruits? 🍎',
+  'légumes': 'Les légumes sont nutritifs! Tu manges des légumes? 🥦',
+  'viande': 'La viande est riche en protéines! Tu aimes? 🥩',
+  'poisson': 'Le poisson est bon pour la santé! Tu aimes? 🐟',
+  'fruits de mer': 'Les fruits de mer sont savoureux! Tu aimes? 🦞',
+  'végétarien': 'Le végétarianisme c\'est respectable! Tu es végétarien? 🥬',
+  'vegan': 'Le véganisme c\'est un bon choix! Tu es vegan? 🌱',
+  'sushi': 'Les sushis sont délicieux! Tu les aimes? 🍣',
+  'tacos': 'Les tacos sont savoureux! Tu aimes? 🌮',
+  'ramen': 'Les ramens sont excellents! Tu aimes? 🍜',
+  'noodles': 'Les noodles sont simples et bons! 🍜',
+  'kebab': 'Les kebabs sont savoureux! Tu aimes? 🍖',
+  'frites': 'Les frites sont croustillantes! Tu aimes? 🍟',
+  'nuggets': 'Les nuggets sont faciles à manger! 🍗',
+  'sandwich': 'Les sandwichs sont pratiques! Tu aimes? 🥪',
+  'salade': 'La salade est saine! Tu aimes? 🥗',
+  'soupe': 'La soupe est réconfortante! Tu aimes? 🍲',
+  'steak': 'Le steak est bon! Tu l\'aimes? 🥩',
+  'poulet': 'Le poulet est polyvalent! Tu l\'aimes? 🍗',
 
-  for (const item of keywordMap) {
-    if (item.keys.some((k) => text.includes(k))) {
-      return item.value;
-    }
-  }
+  // Boissons
+  'eau': 'L\'eau est essentielle! Tu bois assez? 💧',
+  'jus': 'Le jus de fruits est bon! Quel est ton préféré? 🧃',
+  'soda': 'Le soda est sucré! Tu en bois? 🥤',
+  'vin': 'Le vin est sophistiqué! Tu l\'aimes? 🍷',
+  'bière': 'La bière est populaire! Tu l\'aimes? 🍺',
+  'alcool': 'L\'alcool à consommer avec modération! 🍹',
+  'smoothie': 'Les smoothies sont délicieux! Tu en bois? 🥤',
+  'lait': 'Le lait est bon pour les os! 🥛',
+  'milkshake': 'Les milkshakes sont savoureux! Tu les aimes? 🥤',
 
-  return `J’ai bien reçu ta question : "${input}"\n\nC’est une version démo pour le moment, mais bientôt je serai relié à une vraie IA qui répondra à toutes tes questions.`;
-}
-
-function sendMessage() {
-  const input = messageInput.value.trim();
-  if (!input) return;
-
-  addMessage(input, "user");
-  messageInput.value = "";
-  messageInput.focus();
-
-  sendBtn.disabled = true;
-  sendBtn.textContent = "…";
-
-  addLoadingMessage();
-
-  setTimeout(() => {
-    removeLoadingMessage();
-    const reply = getBotReply(input);
-    addMessage(reply, "bot");
-    sendBtn.disabled = false;
-    sendBtn.textContent = "Envoyer";
-  }, 900);
-}
-
-function clearChat() {
-  chatMessages.innerHTML = "";
-  addMessage("Salut ! 👋 Je suis Mali-bot. Pose-moi n’importe quelle question.", "bot");
-}
-
-async function copyChat() {
-  const texts = [...document.querySelectorAll(".bubble p")].map((p) => p.textContent).join("\n\n");
-  if (!texts.trim()) return;
-
-  try {
-    await navigator.clipboard.writeText(texts);
-    const original = copyBtn.textContent;
-    copyBtn.textContent = "Copié !";
-    setTimeout(() => {
-      copyBtn.textContent = original;
-    }, 1200);
-  } catch (err) {
-    console.error("Impossible de copier :", err);
-    alert("Copie impossible dans ce navigateur.");
-  }
-}
-
-sendBtn.addEventListener("click", sendMessage);
-
-messageInput.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") {
-    sendMessage();
-  }
-});
-
-clearBtn.addEventListener("click", clearChat);
-copyBtn.addEventListener("click", copyChat);
-
-messageInput.focus();
+  // Saisons
+  'printemps': 'Le printemps c\'est la renaissance! Les fleurs poussent! 🌸',
+  'été': 'L\'été c\'est chaud et amusant! Tu aimes l\'été? ☀️',
+  'automne': 'L\'automne est coloré! Les feuilles deviennent jaunes et rouges! 🍂',
+  'hiver': 'L\'hiver c\'est froid mais beau! Il y
